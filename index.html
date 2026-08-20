@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BatteryLab Research Hub | 배터리 연구실 학부연구생 개인 연구관리 및 업무일지</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              200: '#a7f3d0',
+              300: '#6ee7b7',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Marked.js for Markdown Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Chart.js for Activity & Experiment Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Canvas Confetti for Celebration Feedback -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex antialiased selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- Left Sidebar -->
+  <aside id="sidebar" class="w-64 bg-white border-r border-slate-200/80 flex flex-col justify-between fixed lg:sticky top-0 h-screen z-40 shrink-0 transition-transform duration-300 shadow-sm">
+    <div class="flex flex-col h-full overflow-y-auto">
+      
+      <!-- App Brand & Lab Logo -->
+      <div class="p-5 pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 text-lg">
+            🔋
+          </div>
+          <div>
+            <h1 class="font-extrabold text-base tracking-tight text-slate-800 flex items-center gap-1.5">
+              <span>BatteryLab</span>
+              <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Hub</span>
+            </h1>
+            <p class="text-[11px] text-slate-400 font-medium">배터리 연구실 개인 연구 노트</p>
+          </div>
+        </div>
+
+        <!-- Quick Add Button -->
+        <button id="global-quick-add-btn" class="w-full mt-4 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-xs shadow-md shadow-emerald-600/15 flex items-center justify-center gap-2 btn-press transition-all">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>빠른 연구 기록 (+ 추가)</span>
+        </button>
+
+        <!-- Quick Search Bar Trigger -->
+        <button id="global-search-trigger" class="w-full mt-2 py-2 px-3 bg-slate-50 hover:bg-slate-100 text-slate-400 rounded-xl text-xs font-medium border border-slate-200/70 flex items-center justify-between transition-colors">
+          <span class="flex items-center gap-2">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>연구 검색...</span>
+          </span>
+          <kbd class="text-[9px] bg-white border px-1.5 py-0.5 rounded font-mono text-slate-500">Ctrl+K</kbd>
+        </button>
+      </div>
+
+      <!-- Main Navigation Menu -->
+      <nav class="p-3 space-y-1 flex-1 text-xs font-semibold text-slate-600">
+        <div class="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">연구 메뉴</div>
+        
+        <a href="#dashboard" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="dashboard">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="layout-dashboard" class="w-4 h-4 text-emerald-600"></i>
+            <span>대시보드 (Dashboard)</span>
+          </span>
+        </a>
+
+        <a href="#dailyLog" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="dailyLog">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="edit-3" class="w-4 h-4 text-emerald-600"></i>
+            <span>업무일지 (Daily Log)</span>
+          </span>
+        </a>
+
+        <a href="#projects" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="projects">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="folder-kanban" class="w-4 h-4 text-indigo-600"></i>
+            <span>프로젝트 (Projects)</span>
+          </span>
+          <span id="badge-active-projects" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">0</span>
+        </a>
+
+        <a href="#tasks" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="tasks">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="check-square" class="w-4 h-4 text-blue-600"></i>
+            <span>연구 Task (Tasks)</span>
+          </span>
+          <span id="badge-pending-tasks" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">0</span>
+        </a>
+
+        <a href="#experiments" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="experiments">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="flask-conical" class="w-4 h-4 text-purple-600"></i>
+            <span>배터리 실험/시뮬레이션</span>
+          </span>
+          <span id="badge-exps-count" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">0</span>
+        </a>
+
+        <a href="#literature" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="literature">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-amber-600"></i>
+            <span>논문 관리 (Literature)</span>
+          </span>
+        </a>
+
+        <a href="#ideas" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="ideas">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-pink-600"></i>
+            <span>연구 아이디어/가설</span>
+          </span>
+        </a>
+
+        <a href="#weeklyReview" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="weeklyReview">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="calendar-range" class="w-4 h-4 text-teal-600"></i>
+            <span>주간 회고 & 랩미팅</span>
+          </span>
+        </a>
+
+        <div class="px-3 pt-3 pb-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">시스템</div>
+        
+        <a href="#settings" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-2xl transition-colors" data-view="settings">
+          <span class="flex items-center gap-2.5">
+            <i data-lucide="settings" class="w-4 h-4 text-slate-500"></i>
+            <span>설정 및 백업 (Settings)</span>
+          </span>
+        </a>
+      </nav>
+
+      <!-- Bottom Profile Pill -->
+      <div class="p-3 border-t border-slate-100 bg-slate-50/50">
+        <div class="flex items-center gap-2.5 p-2 rounded-2xl bg-white border border-slate-200/60">
+          <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-xs shrink-0">
+            학부
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-xs font-bold text-slate-800 truncate">배터리 학부연구생</div>
+            <div class="text-[10px] text-slate-400 truncate">차세대 배터리 연구실</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <div class="flex-1 flex flex-col min-w-0 overflow-x-hidden min-h-screen">
+    
+    <!-- Top App Bar -->
+    <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200/70 sticky top-0 z-30 px-4 md:px-8 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Top Search Bar Input -->
+        <div id="top-search-bar" class="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100/80 hover:bg-slate-200/80 cursor-pointer text-xs text-slate-400 border border-slate-200/50 transition-colors w-64 md:w-80">
+          <i data-lucide="search" class="w-3.5 h-3.5"></i>
+          <span class="truncate">연구 프로젝트, 실험, 논문 검색...</span>
+          <kbd class="ml-auto text-[9px] bg-white border px-1.5 py-0.5 rounded font-mono text-slate-500">Ctrl+K</kbd>
+        </div>
+      </div>
+
+      <!-- Right Header Indicators & Quick Buttons -->
+      <div class="flex items-center gap-3 text-xs">
+        <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Li Metal & COMSOL Research</span>
+        </div>
+        
+        <button onclick="window.app.navigate('dailyLog')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-sm flex items-center gap-1.5 btn-press transition-all">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> 일지 작성
+        </button>
+      </div>
+    </header>
+
+    <!-- Main View Content Area -->
+    <main id="main-content" class="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto">
+      <!-- Dynamically rendered by views -->
+    </main>
+
+  </div>
+
+  <!-- Floating Mobile Quick Add Button -->
+  <button id="floating-quick-add-btn" class="sm:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-emerald-600 text-white shadow-xl shadow-emerald-600/30 flex items-center justify-center text-2xl z-30 btn-press">
+    <i data-lucide="plus" class="w-6 h-6"></i>
+  </button>
+
+  <!-- Reusable Modals & Dialogs will be injected here -->
+
+  <!-- App Universal Bundle (file:// and http:// zero-setup compatible) -->
+  <script src="js/bundle.js"></script>
+</body>
+</html>

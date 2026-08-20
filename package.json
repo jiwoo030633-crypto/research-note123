@@ -1,0 +1,21 @@
+{
+  "name": "battery-research-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "배터리 연구실 학부연구생용 개인 연구관리 및 업무일지 웹앱 (BatteryLab Research Hub)",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Build completed successfully for Vercel deployment'",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "battery",
+    "research",
+    "comsol",
+    "daily-log",
+    "laboratory",
+    "vercel"
+  ],
+  "author": "jiwoo",
+  "license": "MIT"
+}
